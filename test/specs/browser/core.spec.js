@@ -21,6 +21,7 @@ import '../../tag/named-child.tag'
 import '../../tag/deferred-mount.tag'
 import '../../tag/deferred-unmount.tag'
 import '../../tag/prevent-update.tag'
+import '../../tag/prevent-unmount.tag'
 import '../../tag/expression-eval-count.tag'
 import '../../tag/multi-named.tag'
 import '../../tag/named-data-ref.tag'
@@ -564,6 +565,27 @@ describe('Riot core', function() {
     expect(tag.refs['fancy-name'].innerHTML).to.be.equal('john')
 
     tag.unmount()
+  })
+
+  it('tag should not unmount if preventDefault flag is set in before-update', function() {
+
+    injectHTML('<prevent-unmount></prevent-unmount>')
+
+    var tag = riot.mount('prevent-unmount')[0]
+
+    expect(tag.refs['fancy-name'].innerHTML).to.be.equal('john')
+
+    tag.unmount()
+
+    expect(tag.isMounted).to.be.equal(true)
+
+    fireEvent(tag.root.getElementsByTagName('p')[0], 'click')
+
+    expect(tag.refs['fancy-name'].innerHTML).to.be.equal('mark')
+
+    tag.unmount()
+
+    expect(tag.isMounted).to.be.equal(false)
   })
 
   it('the before events get triggered', function() {
